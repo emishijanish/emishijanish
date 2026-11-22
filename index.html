@@ -91,6 +91,141 @@ h1{
         transform:translateY(110vh);
     }
 }
+
+/* ---------- NOWE: przycisk otwierający niespodziankę ---------- */
+.surprise-btn{
+    margin-top:25px;
+    padding:14px 26px;
+    border:none;
+    border-radius:999px;
+    font-size:17px;
+    font-weight:bold;
+    color:white;
+    background:linear-gradient(135deg,#ff3b3b,#c4002f);
+    box-shadow:0 6px 20px rgba(255,40,70,.45);
+    cursor:pointer;
+    transition:transform .2s;
+}
+.surprise-btn:hover{ transform:scale(1.06); }
+
+/* ---------- NOWE: pełnoekranowa nakładka z sercem ---------- */
+#heartOverlay{
+    position:fixed;
+    inset:0;
+    z-index:10;
+    background:#000;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    opacity:0;
+    visibility:hidden;
+    transition:opacity .6s, visibility .6s;
+}
+#heartOverlay.open{
+    opacity:1;
+    visibility:visible;
+}
+
+#love-heart{
+    position:relative;
+    width:100%;
+    max-width:800px;
+    aspect-ratio:4 / 3;
+    background:#000;
+    cursor:pointer;
+}
+#love-heart canvas{
+    display:block;
+    width:100%;
+    height:100%;
+}
+@media (orientation:portrait){
+    #love-heart{ aspect-ratio:1 / 1.15; }
+}
+
+.back-btn{
+    position:absolute;
+    top:18px;
+    left:18px;
+    padding:10px 18px;
+    border:1px solid rgba(255,255,255,.35);
+    border-radius:999px;
+    background:rgba(255,255,255,.08);
+    color:white;
+    font-size:16px;
+    cursor:pointer;
+}
+.back-btn:hover{ background:rgba(255,255,255,.2); }
+
+/* ---------- GRA: Mechanizm bicia Janka ---------- */
+.btn-row{ display:flex; flex-wrap:wrap; gap:12px; justify-content:center; margin-top:25px; }
+.btn-row .surprise-btn{ margin-top:0; }
+.open-game-btn{ background:linear-gradient(135deg,#ff9a00,#d35400); box-shadow:0 6px 20px rgba(255,140,0,.4); }
+
+#gameOverlay{
+    position:fixed; inset:0; z-index:30;
+    display:flex; flex-direction:column; align-items:center;
+    padding:16px; overflow-y:auto;
+    background:radial-gradient(circle at top,#3a0a14,#0b0204 70%);
+    opacity:0; visibility:hidden;
+    transition:opacity .4s, visibility .4s;
+}
+#gameOverlay.open{ opacity:1; visibility:visible; }
+#gameOverlay .back-btn{ z-index:2; }
+
+.game{ position:relative; width:100%; max-width:480px; margin:auto; padding-top:48px; text-align:center; }
+.game h2{ font-size:26px; margin:8px 0 14px; }
+
+.hp-row{ display:flex; justify-content:space-between; font-weight:bold; margin-bottom:6px; }
+.hp-bar{ height:22px; border-radius:12px; overflow:hidden; background:rgba(255,255,255,.15); border:2px solid rgba(255,255,255,.25); }
+.hp-fill{ height:100%; width:100%; background:#2ecc40; transition:width .25s, background .25s; }
+
+.photo-frame{
+    position:relative; margin:16px 0; height:min(48vh,420px);
+    display:flex; align-items:center; justify-content:center;
+    border-radius:20px; overflow:hidden;
+    background:rgba(0,0,0,.45); border:2px solid rgba(255,255,255,.2);
+}
+.photo-frame img{ display:block; max-width:100%; max-height:100%; object-fit:contain; }
+.photo-frame img.hit{ animation:knock .35s; }
+@keyframes knock{
+    0%  { transform:translate(0,0) rotate(0); }
+    20% { transform:translate(-14px,4px) rotate(-4deg); filter:sepia(1) saturate(6) hue-rotate(-40deg); }
+    40% { transform:translate(12px,-3px) rotate(3deg); }
+    60% { transform:translate(-8px,2px) rotate(-2deg); }
+    100%{ transform:translate(0,0) rotate(0); }
+}
+.no-photo{ padding:20px; font-size:15px; line-height:1.5; opacity:.8; }
+
+.dmg{
+    position:absolute; pointer-events:none;
+    color:#ff2a2a; font-size:30px; font-weight:bold; text-shadow:0 2px 6px #000;
+    animation:floatUp .9s ease-out forwards;
+}
+@keyframes floatUp{
+    from{ opacity:1; transform:translateY(0) scale(.8); }
+    to  { opacity:0; transform:translateY(-80px) scale(1.3); }
+}
+
+.punch-btn{
+    width:100%; padding:20px; border:none; border-radius:18px;
+    font-size:28px; font-weight:bold; letter-spacing:2px; color:#fff;
+    background:linear-gradient(135deg,#ff3b3b,#c4002f);
+    box-shadow:0 8px 24px rgba(255,40,70,.5);
+    cursor:pointer; touch-action:manipulation; user-select:none; -webkit-user-select:none;
+    transition:transform .08s;
+}
+.punch-btn:active{ transform:scale(.96); }
+.punch-btn:disabled{ opacity:.4; cursor:not-allowed; }
+.hits{ margin-top:14px; font-size:20px; }
+
+.gameover{
+    position:absolute; inset:0; display:none;
+    flex-direction:column; align-items:center; justify-content:center; gap:14px;
+    padding:20px; border-radius:18px; background:rgba(0,0,0,.88);
+}
+.gameover.show{ display:flex; }
+.gameover h3{ font-size:30px; }
 </style>
 </head>
 <body>
@@ -122,6 +257,42 @@ h1{
 
         <div class="time" id="time"></div>
 
+        <!-- NOWE: przycisk -->
+        <div class="btn-row">
+            <button class="surprise-btn" id="openHeart">❤️ Kliknij, mam dla Ciebie coś ❤️</button>
+            <button class="surprise-btn open-game-btn" id="openGame">🥊 Uderz Janka</button>
+        </div>
+
+    </div>
+</div>
+
+<!-- NOWE: nakładka z animowanym sercem -->
+<div id="heartOverlay">
+    <button class="back-btn" id="closeHeart">← Wróć</button>
+    <div id="love-heart"><canvas></canvas></div>
+</div>
+
+<!-- GRA: Mechanizm bicia Janka -->
+<div id="gameOverlay">
+    <button class="back-btn" id="closeGame">← Wróć</button>
+    <div class="game">
+        <h2>🥊 Mechanizm bicia Janka</h2>
+        <div class="hp-row"><span>Janek</span><span id="hpText">100 / 100 HP</span></div>
+        <div class="hp-bar"><div class="hp-fill" id="hpFill"></div></div>
+
+        <div class="photo-frame" id="photoFrame">
+            <img id="janekPhoto" alt="Janek" style="display:none">
+            <div class="no-photo" id="noPhoto">Ładowanie zdjęć…</div>
+        </div>
+
+        <button class="punch-btn" id="punchBtn">UDERZ</button>
+        <div class="hits" id="hitsCount">Uderzenia: 0</div>
+
+        <div class="gameover" id="gameOver">
+            <h3>💀 Koniec gry</h3>
+            <p id="gameOverText"></p>
+            <button class="surprise-btn" id="playAgain">ZAGRAJ PONOWNIE</button>
+        </div>
     </div>
 </div>
 
@@ -147,11 +318,12 @@ function updateCounter(){
         /(1000*60)
     );
 
+    /* POPRAWKA: tekst z ${...} musi być w odwrotnych apostrofach ` ` */
     document.getElementById("days").innerHTML =
-    Razem już ${days} dni ❤️;
+    `Razem już ${days} dni ❤️`;
 
     document.getElementById("time").innerHTML =
-    ${hours} godzin i ${minutes} minut;
+    `${hours} godzin i ${minutes} minut`;
 }
 
 setInterval(updateCounter,1000);
@@ -183,10 +355,274 @@ function createHeart(){
 setInterval(createHeart,300);
 
 </script>
+<!-- POPRAWKA: usunięty zbędny drugi </script> -->
 
+<script>
+/* ================= SERCE Z NAPISÓW ================= */
+(function () {
+  const overlay = document.getElementById('heartOverlay');
+  const root = document.getElementById('love-heart');
+  const cv = root.querySelector('canvas');
+  const ctx = cv.getContext('2d');
+
+  const PHRASES = [
+    "I love you", "Seni seviyorum", "Te amo", "Je t’aime",
+    "Ich liebe dich", "Ti amo", "Eu te amo", "Я тебя люблю",
+    "사랑해", "愛してる", "我爱你", "मैं तुमसे प्यार करता हूँ",
+    "Σ’ αγαπώ", "Ik hou van jou", "Jag älskar dig", "Kocham cię",
+    "ฉันรักเธอ", "Anh yêu em", "Aku cinta kamu", "Я тебе кохаю"
+  ];
+  const FONT = '"Segoe UI","Noto Sans","Noto Sans Thai","Noto Sans Devanagari","Noto Sans KR","Noto Sans JP","Noto Sans SC",system-ui,sans-serif';
+  const DURATION = 6500;   // ms na jeden obieg serca
+  const FADE = 800;        // ms rozjaśniania napisu
+  const DELAY = 700;       // ms pustego ekranu na start
+
+  function makeRng(seed) {
+    return function () {
+      seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+      let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+
+  function heart(a) {
+    const x = 16 * Math.pow(Math.sin(a), 3);
+    const y = 13 * Math.cos(a) - 5 * Math.cos(2 * a) - 2 * Math.cos(3 * a) - Math.cos(4 * a);
+    return [x, y];
+  }
+
+  function inPoly(poly, x, y) {
+    let c = false;
+    for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+      const xi = poly[i][0], yi = poly[i][1], xj = poly[j][0], yj = poly[j][1];
+      if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) c = !c;
+    }
+    return c;
+  }
+
+  let W, H, items = [], raf, t0, timer;
+
+  function layout() {
+    const rng = makeRng(11);
+    const SC = Math.min(W * 0.86 / 32, H * 0.9 / 29);
+    const cx = W / 2, cy = H / 2, base = Math.max(8, SC * 0.8);
+    const P = (a, s) => { const h = heart(a); return [cx + h[0] * SC * s, cy - (h[1] + 2.5) * SC * s]; };
+
+    const poly = [];
+    for (let i = 0; i < 360; i++) poly.push(P(i / 360 * Math.PI * 2, 1.04));
+
+    items = [];
+    function tryPlace(px, py, fs, key) {
+      const word = PHRASES[rng() * PHRASES.length | 0];
+      const font = '700 ' + fs.toFixed(1) + 'px ' + FONT;
+      ctx.font = font;
+      const w = ctx.measureText(word).width, h = fs * 1.1;
+      const L = px - w / 2, R = px + w / 2, T = py - h / 2, B = py + h / 2;
+      if (!inPoly(poly, L, T) || !inPoly(poly, R, T) || !inPoly(poly, L, B) || !inPoly(poly, R, B)) return false;
+      const pad = fs * 0.12;
+      for (let i = 0; i < items.length; i++) {
+        const it = items[i];
+        if (L - pad < it.R && R + pad > it.L && T - pad < it.B && B + pad > it.T) return false;
+      }
+      items.push({ word, font, x: px, y: py, L, R, T, B, key, t: 0 });
+      return true;
+    }
+
+    const N = 700, a0 = 0.55;
+    let ring = 0;
+    for (let s = 0.96; s > 0.07; s -= 0.05, ring++) {
+      for (let i = 0; i < N; i += 2) {
+        const p = P(a0 + Math.PI * 2 * i / N, s);
+        tryPlace(p[0], p[1], base * (0.7 + rng() * 0.55), i / N + ring * 0.035);
+      }
+    }
+    const minX = cx - 17 * SC, maxX = cx + 17 * SC, minY = cy - 15 * SC, maxY = cy + 20 * SC;
+    for (let k = 0; k < 5000; k++) {
+      tryPlace(minX + rng() * (maxX - minX), minY + rng() * (maxY - minY),
+               base * (0.55 + rng() * 0.4), 1.15 + rng() * 0.4);
+    }
+
+    items.sort((a, b) => a.key - b.key);
+    items.forEach(it => { it.t = DELAY + it.key * DURATION; });
+  }
+
+  function frame(now) {
+    const el = now - t0;
+    ctx.clearRect(0, 0, W, H);
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    let done = true;
+    for (let i = 0; i < items.length; i++) {
+      const it = items[i];
+      const dt = el - it.t;
+      if (dt < 0) { done = false; break; }
+      const k = Math.min(1, dt / FADE);
+      if (k < 1) done = false;
+      ctx.fillStyle = 'rgb(' + (110 + 145 * k | 0) + ',' + (8 + 34 * k | 0) + ',' + (8 + 34 * k | 0) + ')';
+      ctx.font = it.font;
+      ctx.fillText(it.word, it.x, it.y);
+    }
+    if (!done) raf = requestAnimationFrame(frame);
+  }
+
+  function start() {
+    cancelAnimationFrame(raf);
+    const r = root.getBoundingClientRect(), d = window.devicePixelRatio || 1;
+    W = r.width; H = r.height;
+    if (!W || !H) return;
+    cv.width = W * d; cv.height = H * d;
+    ctx.setTransform(d, 0, 0, d, 0, 0);
+    layout();
+    t0 = performance.now();
+    raf = requestAnimationFrame(frame);
+  }
+
+  function open() {
+    overlay.classList.add('open');
+    start();
+  }
+  function close() {
+    overlay.classList.remove('open');
+    cancelAnimationFrame(raf);
+  }
+
+  document.getElementById('openHeart').addEventListener('click', open);
+  document.getElementById('closeHeart').addEventListener('click', close);
+  root.addEventListener('click', start); // klik w serce = od nowa
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && overlay.classList.contains('open')) close();
+  });
+  window.addEventListener('resize', () => {
+    if (!overlay.classList.contains('open')) return;
+    clearTimeout(timer); timer = setTimeout(start, 150);
+  });
+})();
 </script>
 
+<script>
+/* ================= GRA: MECHANIZM BICIA JANKA ================= */
+(function () {
 
+  /* ======== TU EDYTUJESZ ======== */
+  const janekPhotos = ["janek100.jpg", "janek90.jpg", "janek80.jpg", "janek70.jpg", "janek60.jpg", "janek50.jpg", "janek40.jpg", "janek30.jpg", "janek10.jpg", "janek0.jpg"]; // nazwy plików z folderu janek/
+  const PHOTO_FOLDER = "janek/";   // folder ze zdjęciami w repozytorium
+  const HIT_SOUND = "hit.mp3";     // Twój własny plik dźwiękowy (obok index.html)
+  const MAX_HP = 100;
+  const PHOTO_CHANGE_EVERY = 10;   // zdjęcie zmienia się co tyle HP
+  /* ============================== */
+
+  const $ = id => document.getElementById(id);
+  const overlay = $('gameOverlay'), frame = $('photoFrame'), photoEl = $('janekPhoto'),
+        noPhoto = $('noPhoto'), btn = $('punchBtn'), fill = $('hpFill'), hpText = $('hpText'),
+        hitsEl = $('hitsCount'), over = $('gameOver'), overText = $('gameOverText');
+
+  let hp = MAX_HP, hits = 0, idx = 0, photos = [], loaded = false;
+
+  /* Dźwięk – jeśli pliku nie ma, gra działa normalnie, tylko bez dźwięku */
+  const sound = new Audio();
+  let soundOk = true;
+  sound.preload = 'auto';
+  sound.addEventListener('error', () => { soundOk = false; });
+  sound.src = HIT_SOUND;
+  function playHit() {
+    if (!soundOk) return;
+    try {
+      const a = sound.cloneNode();
+      const p = a.play();
+      if (p && p.catch) p.catch(() => {});
+    } catch (e) {}
+  }
+
+  /* Wczytuje zdjęcia; brakujące pliki są po cichu pomijane */
+  function loadPhotos() {
+    return Promise.all(janekPhotos.map(name => new Promise(resolve => {
+      const im = new Image();
+      im.onload = () => resolve(PHOTO_FOLDER + name);
+      im.onerror = () => resolve(null);
+      im.src = PHOTO_FOLDER + name;
+    }))).then(list => {
+      photos = list.filter(Boolean);
+      loaded = true;
+      if (!photos.length) noPhoto.textContent = 'Nie znaleziono zdjęć. Dodaj pliki do folderu „' + PHOTO_FOLDER + '” i wpisz ich nazwy w tablicy janekPhotos.';
+      showPhoto();
+    });
+  }
+
+  function showPhoto() {
+    if (photos.length) {
+      photoEl.src = photos[idx % photos.length];
+      photoEl.style.display = 'block';
+      noPhoto.style.display = 'none';
+    } else {
+      photoEl.style.display = 'none';
+      noPhoto.style.display = 'block';
+    }
+  }
+
+  function render() {
+    fill.style.width = (hp / MAX_HP * 100) + '%';
+    fill.style.background = hp > 50 ? '#2ecc40' : hp > 25 ? '#ff9a00' : '#ff2a2a';
+    hpText.textContent = hp + ' / ' + MAX_HP + ' HP';
+    hitsEl.textContent = 'Uderzenia: ' + hits;
+    btn.disabled = hp <= 0;
+  }
+
+  function floatText() {
+    const s = document.createElement('span');
+    s.className = 'dmg';
+    s.textContent = '-1 HP';
+    s.style.left = (25 + Math.random() * 45) + '%';
+    s.style.top = (25 + Math.random() * 35) + '%';
+    frame.appendChild(s);
+    s.addEventListener('animationend', () => s.remove());
+    setTimeout(() => s.remove(), 1200);
+  }
+
+  function shake() {
+    photoEl.classList.remove('hit');
+    void photoEl.offsetWidth;          // restart animacji
+    photoEl.classList.add('hit');
+  }
+
+  function hit() {
+    if (hp <= 0) return;               // blokada po końcu gry
+    hp--; hits++;
+    if (hp > 0 && hits % PHOTO_CHANGE_EVERY === 0) {
+      idx++;                           // następne zdjęcie co PHOTO_CHANGE_EVERY HP
+      showPhoto();
+    }
+    playHit();
+    floatText();
+    if (photos.length) shake();        // drgnięcie przy każdym uderzeniu
+    render();
+    if (hp <= 0) {
+      overText.textContent = 'Janek został pokonany w ' + hits + ' uderzeniach!';
+      setTimeout(() => over.classList.add('show'), 500);
+    }
+  }
+
+  function reset() {
+    hp = MAX_HP; hits = 0; idx = 0;
+    over.classList.remove('show');
+    showPhoto();
+    render();
+  }
+
+  function open()  { overlay.classList.add('open'); if (!loaded) loadPhotos(); }
+  function close() { overlay.classList.remove('open'); }
+
+  $('openGame').addEventListener('click', open);
+  $('closeGame').addEventListener('click', close);
+  btn.addEventListener('click', hit);
+  $('playAgain').addEventListener('click', reset);
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && overlay.classList.contains('open')) close();
+  });
+
+  render();
+})();
+</script>
 
 <button onclick="document.getElementById('music').play()"
 
@@ -207,6 +643,8 @@ border-radius:15px;
 font-size:16px;
 
 cursor:crosshair;
+
+z-index:20;
 
 ">
 
