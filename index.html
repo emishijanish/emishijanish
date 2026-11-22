@@ -12,7 +12,7 @@
     box-sizing:border-box;
 }
 
-body{SS
+body{
     height:100vh;
     overflow:hidden;
     font-family:Arial,sans-serif;
@@ -25,7 +25,7 @@ body{SS
     height:100%;
     background:
     linear-gradient(rgba(0,0,0,.45),rgba(0,0,0,.45)),
-    url("EMILKUMILKU.jpg");
+    url("ujobek.jpg");
     background-size:cover;
     background-position:center;
     z-index:-2;
@@ -102,10 +102,10 @@ h1{
 
         <div class="heart">❤️</div>
 
-        <h1>Kochana Emilciu❤️</h1>
+        <h1>kochanie moje❤️</h1>
 
         <div class="message">
-            Emilku,<br><br>
+            emilciu,<br><br>
 
             Dziękuję Ci za każdy wspólny moment,
             za Twój uśmiech,za to,że jesteś i
@@ -148,10 +148,10 @@ function updateCounter(){
     );
 
     document.getElementById("days").innerHTML =
-    `Razem już ${days} dni ❤️`;
+    Razem już ${days} dni ❤️;
 
     document.getElementById("time").innerHTML =
-    `${hours} godzin i ${minutes} minut`;
+    ${hours} godzin i ${minutes} minut;
 }
 
 setInterval(updateCounter,1000);
@@ -184,5 +184,43 @@ setInterval(createHeart,300);
 
 </script>
 
+</script>
+
+
+
+<button onclick="document.getElementById('music').play()"
+
+style="
+
+position:fixed;
+
+bottom:20px;
+
+right:20px;
+
+padding:12px 20px;
+
+border:none;
+
+border-radius:15px;
+
+font-size:16px;
+
+cursor:crosshair;
+
+">
+
+❤️ click emishq❤️
+
+</button>
+
+
+
+<audio id="music" loop>
+
+    <source src="`12345.mp3" type="audio/mpeg">
+
+</audio>
+    
 </body>
 </html>
