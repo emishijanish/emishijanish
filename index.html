@@ -92,7 +92,7 @@ h1{
     }
 }
 
-/* ---------- NOWE: przycisk otwierający niespodziankę ---------- */
+
 .surprise-btn{
     margin-top:25px;
     padding:14px 26px;
@@ -244,7 +244,7 @@ h1{
 
             Dziękuję Ci za każdy wspólny moment,
             za Twój uśmiech,za to,że jesteś i
-            za to,że ze mną wytrzymujesz
+            za to,że ze mną wytrzymujesz,
 
             nie wiem co ja bym bez ciebie zrobił,
             Kocham cię najbardziej na świecie,i z każdym
@@ -488,7 +488,7 @@ setInterval(createHeart,300);
 
   document.getElementById('openHeart').addEventListener('click', open);
   document.getElementById('closeHeart').addEventListener('click', close);
-  root.addEventListener('click', start); // klik w serce = od nowa
+  root.addEventListener('click', start); 
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape' && overlay.classList.contains('open')) close();
   });
@@ -543,7 +543,6 @@ setInterval(createHeart,300);
     }))).then(list => {
       photos = list.filter(Boolean);
       loaded = true;
-      if (!photos.length) noPhoto.textContent = 'Nie znaleziono zdjęć. Dodaj pliki do folderu „' + PHOTO_FOLDER + '” i wpisz ich nazwy w tablicy janekPhotos.';
       showPhoto();
     });
   }
@@ -596,7 +595,7 @@ setInterval(createHeart,300);
     if (photos.length) shake();        
     render();
     if (hp <= 0) {
-      overText.textContent = 'Janek został pokonany w ' + hits + ' uderzeniach!';
+      overText.textContent = 'Janek zmarl po' + hits + ' uderzeniach!';
       setTimeout(() => over.classList.add('show'), 500);
     }
   }
